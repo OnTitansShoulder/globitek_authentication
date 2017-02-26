@@ -5,12 +5,11 @@
 ob_start();
 
 // Enable sessions
-session_start();
-// session_start([
-//   'use_only_cookies' => 1,
-//   'cookie_lifetime' => (60 * 60 * 24 * 1),
-//   'cookie_httponly' => 1
-// ]);
+session_start([
+  'use_only_cookies' => 1,
+  'cookie_lifetime' => (60 * 60 * 24 * 1),
+  'cookie_httponly' => 1
+]);
 
 // Turns off any browser built-in XSS protections
 // LEAVE THIS LINE IN WHILE YOU ARE LEARNING
@@ -32,10 +31,12 @@ define("DOC_ROOT", $doc_root);
 
 require_once('functions.php');
 require_once('database.php');
-require_once('query_functions.php');
+require_once('query_functions_components.php');
+require_once('query_functions_users.php');
 require_once('validation_functions.php');
 require_once('auth_functions.php');
 require_once('csrf_functions.php');
+require_once('crypto.php');
 
 $db = db_connect();
 

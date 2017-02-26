@@ -70,4 +70,79 @@
     }
   }
 
+  function record_failed_login($username){
+    $sql_date = date("Y-m-d H:i:s");
+
+    $failed_login_result = find_failed_login($username);
+    $failed_login = db_fetch_assoc($failed_login_result);
+
+    if(!$failed_login){
+      $failed_login = [
+        'username' => $username,
+        'count' => 1,
+        'last_attempt' => $sql_date
+      ];
+      insert_failed_login($failed_login);
+    } else {
+      $failed_login['count'] = $failed_login['count'] + 1;
+      $failed_login['last_attempt'] = $sql_date;
+      update_failed_login($failed_login);
+    }
+    return true;
+  }
+
+  function get_throttle_time($username){
+    $threshold = 5; // how many times a user can attemp
+    $lockout_time = 60 * 5; // user need to wair N seconds before next attemp is allowed
+
+    $failed_login_result = find_failed_login($username);
+    $failed_login = db_fetch_assoc($failed_login_result);
+
+    if(!isset($failed_login)) { // has not failed yet
+      return 0;
+    }
+    if($failed_login['count'] < $threshold) { // has not failed enough times to be blocked yet
+      return 0;
+    }
+
+    $last_attempt = strtotime($failed_login['last_attempt']);
+    $time_elapsed = time() - $last_attempt;
+    $remaining_time = $lockout_time - $time_elapsed;
+    if($remaining_time < 0){
+      reset_failed_login($username);
+      return 0;
+    } else {
+      return (int)$remaining_time;
+    }
+  }
+
+  function change_seconds_to_minutes_round_up($seconds){
+    $seconds = $seconds + 59;
+    return (int)($seconds / 60);
+  }
+
+  function generate_strong_password($length=12){
+    $result_password = "";
+    $symbols = array('!', '*', '+', ',', '-', '.', '@', '_');
+    // Generate an integer from 1 to
+    while($length > 0){
+      // 1-26 : a-z | 27-52 : A-Z | 53-62 : 0-9 | 63-70 : !*+,-.@_
+      $rand_int = rand(1, 70);
+
+      if($rand_int < 27){
+        $result_password = $result_password . chr($rand_int + 96);
+      } else if($rand_int < 53){
+        $result_password = $result_password . chr($rand_int - 26 + 64);
+      } else if($rand_int < 63){
+        $result_password = $result_password . chr($rand_int - 52 + 47);
+      } else{
+        $rand_int = $rand_int - 63;
+        $result_password = $result_password . $symbols[$rand_int];
+      }
+
+      $length = $length - 1;
+    }
+    return $result_password;
+  }
+
 ?>

@@ -1,75 +1,86 @@
 # Project 6 - Globitek Authentication and Login Throttling
 
-Time spent: **X** hours spent in total
+Time spent: 12 hours spent in total
 
 ## User Stories
 
 The following **required** functionality is completed:
 
 1\. "staff/users/new.php" and "staff/users/edit.php"
-  * [ ]  Form with inputs for "Password" and "Confirm Password"
-  * [ ]  Strong password requirements text
+  * [x]  Form with inputs for "Password" and "Confirm Password"
+  * [x]  Strong password requirements text
 
 2\. Data validations
-  * [ ]  Returns an error if password or confirm_password are blank.
-  * [ ]  Returns an error if password and confirm_password do not match.
-  * [ ]  Returns an error if password is not at least 12 characters long.
-  * [ ]  Returns an error if password does not meet character requirements.
-  * [ ]  Returns any errors related to other validations already on the user.
+  * [x]  Returns an error if password or confirm_password are blank.
+  * [x]  Returns an error if password and confirm_password do not match.
+  * [x]  Returns an error if password is not at least 12 characters long.
+  * [x]  Returns an error if password does not meet character requirements.
+  * [x]  Returns any errors related to other validations already on the user.
 
 3\. Saving a user
-  * [ ]  Encrypts the password
-  * [ ]  Stores the password in the database
+  * [x]  Encrypts the password
+  * [x]  Stores the password in the database
 
 4\. Login page
-  * [ ]  Verify the correct password.
-  * [ ]  Do not create a User Enumeration vulnerability.
+  * [x]  Verify the correct password.
+  * [x]  Do not create a User Enumeration vulnerability.
 
 5\. If a user fails to log in:
-  * [ ]  Record the failed login for the first 5 attempts.
-  * [ ]  Return a "too many failed logins" message after 5 attempts.
-  * [ ]  Future attempts will show the number of minutes remaining in the lockout.
-  * [ ]  After the lockout period, the failed logins count resets to 0.
+  * [x]  Record the failed login for the first 5 attempts.
+  * [x]  Return a "too many failed logins" message after 5 attempts.
+  * [x]  Future attempts will show the number of minutes remaining in the lockout.
+  * [x]  After the lockout period, the failed logins count resets to 0.
 
 6\. After any successful login:
-  * [ ]  Set the failed_logins.count for the username to 0.
+  * [x]  Set the failed_logins.count for the username to 0.
 
 7\. SQLi and XSS
-  * [ ]  Do not introduce any SQLI Injection and Cross-Site Scripting vulnerabilities.
+  * [x]  Do not introduce any SQLI Injection and Cross-Site Scripting vulnerabilities.
 
 The following advanced user stories are optional:
 
 * Bonus Objective 1\.
-  * [ ]  Identify the subtle Username Enumeration weakness. Include a short description of how the code could be modified to be more secure below:
+  * [x]  Identify the subtle Username Enumeration weakness. Include a short description of how the code could be modified to be more secure below:
+  Problem: When the username is not found, the error message is slightly different from the case when the
+  username and password don't match.
+  Solution: change the error messages to be exactly the same: "Log in was unsuccessful."
 
 * Bonus Objective 2\.
-  * [ ]  User password validations only run when the password is not blank.
-  * [ ]  `update_user` only encrypts and updates the password when the password is not blank.
+  * [x]  User password validations only run when the password is not blank.
+  * [x]  `update_user` only encrypts and updates the password when the password is not blank.
 
 * Bonus Objective 3\.
-  * [ ]  Create a new user using cost 10.
-  * [ ]  Set bcrypt "cost" parameter to 11 (for both insert and update).
-  * [ ]  Try to login with the "cost 10" user.
-  * [ ]  Briefly describe why login still works even after the cost is changed:
+  * [x]  Create a new user using cost 10.
+  * [x]  Set bcrypt "cost" parameter to 11 (for both insert and update).
+  * [x]  Try to login with the "cost 10" user.
+  * [x]  Briefly describe why login still works even after the cost is changed:
+  Answer: because the "cost" means to do the same algorithm for the "cost" number of times.
+  Therefore, applying it 11 times is still a valid password hash since it only differs from
+  one additional execution of the algorithm.
 
 * Bonus Objective 4\.
-  * [ ]  Add "Previous password" to "public/staff/users/edit.php"
-  * [ ]  Validate the previous password before allowing the password to be updated.
-  * [ ]  Require previous password only if new password is being updated (if also completing Bonus Objective 2).
+  * [x]  Add "Previous password" to "public/staff/users/edit.php"
+  * [x]  Validate the previous password before allowing the password to be updated.
+  * [x]  Require previous password only if new password is being updated (if also completing Bonus Objective 2).
 
 * Advanced Objective 1\.
-  * [ ]  Implement `password_hash()` on your own as `my_password_hash()`.
-  * [ ]  Implement `password_verify()` on your own as `my_password_verify()`.
+  * [x]  Implement `password_hash()` on your own as `my_password_hash()`.
+  * [x]  Implement `password_verify()` on your own as `my_password_verify()`.
 
 * Advanced Objective 2\.
-  * [ ]  Write `generate_strong_password()`
-  * [ ]  Add a suggestion for a 12-character strong password to the new and edit user pages.
+  * [x]  Write `generate_strong_password()`
+  * [x]  Add a suggestion for a 12-character strong password to the new and edit user pages.
 
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
 
-<img src='' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='http://i.imgur.com/oxwcFM4.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='http://i.imgur.com/ssxXUen.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='http://i.imgur.com/VwddESX.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+
+The Full gif:
+
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 

@@ -5,6 +5,22 @@
     return !isset($value) || trim($value) == '';
   }
 
+  function check_POST_blanks($post, $errors){
+    if(is_blank($post['first_name'])){
+      $errors[] = "First name should not be blank.";
+    }
+    if(is_blank($post['last_name'])){
+      $errors[] = "Last name should not be blank.";
+    }
+    if(is_blank($post['username'])){
+      $errors[] = "Username should not be blank.";
+    }
+    if(is_blank($post['email'])){
+      $errors[] = "Email should not be blank.";
+    }
+    return $errors;
+  }
+
   // has_length('abcd', ['min' => 3, 'max' => 5])
   function has_length($value, $options=array()) {
     $length = strlen($value);
@@ -29,6 +45,11 @@
   // has_valid_username_format('johnny_5')
   function has_valid_username_format($value) {
     return preg_match('/\A[A-Za-z0-9_]+\Z/', $value);
+  }
+
+  function has_valid_passwrod_format($value) {
+    $pattern = '/^.*(?=.{12,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[+\-=_!@\$\*\.,]).*$/';
+    return preg_match($pattern, $value);
   }
 
   // has_valid_phone_format('(212) 555-6666')

@@ -1,17 +1,13 @@
 <?php
 require_once('../../private/initialize.php');
 
-// Until we learn about encryption, we will use an unencrypted
-// master password as a stand-in. It should go without saying
-// that this should *never* be done in real production code.
-$master_password = 'secret';
-
 // Set default values for all variables the page needs.
 $errors = array();
 $username = '';
 $password = '';
+$throttle_time = 0;
 
-if(is_post_request() && request_is_same_domain()) {
+if(is_post_request() && request_is_same_domain()) { //
   ensure_csrf_token_valid();
 
   // Confirm that values are present before accessing them.
@@ -21,9 +17,21 @@ if(is_post_request() && request_is_same_domain()) {
   // Validations
   if (is_blank($username)) {
     $errors[] = "Username cannot be blank.";
+  } else if (!has_valid_username_format($username)){
+    $errors[] = "Log in was unsuccessful.";
   }
   if (is_blank($password)) {
     $errors[] = "Password cannot be blank.";
+  }
+
+
+
+  if(empty($errors)){
+    $throttle_time = get_throttle_time($username);
+    $throttle_time = change_seconds_to_minutes_round_up($throttle_time);
+    if($throttle_time > 0){
+      $errors[] = "You have attempted too many times.";
+    }
   }
 
   // If there were no errors, submit data to database
@@ -33,18 +41,22 @@ if(is_post_request() && request_is_same_domain()) {
     // No loop, only one result
     $user = db_fetch_assoc($users_result);
     if($user) {
-      if($password === $master_password) {
+      $stored_hash = $user['password'];
+      if(decrypt_password_compare($password, $stored_hash)) {
         // Username found, password matches
         log_in_user($user);
+        reset_failed_login($username);
         // Redirect to the staff menu after login
         redirect_to('index.php');
       } else {
         // Username found, but password does not match.
         $errors[] = "Log in was unsuccessful.";
+        record_failed_login($username);
       }
     } else {
       // No username found
-      $errors[] ="Log in was not successful.";
+      $errors[] ="Log in was unsuccessful.";
+      record_failed_login($username);
     }
   }
 }
@@ -61,7 +73,13 @@ if(is_post_request() && request_is_same_domain()) {
 <div id="main-content">
   <h1>Log in</h1>
 
-  <?php echo display_errors($errors); ?>
+  <?php
+    echo display_errors($errors);
+    if($throttle_time > 0){
+      echo "Time remaining until next attempt: ";
+      echo $throttle_time . " minute(s).<br /><br />";
+    }
+  ?>
 
   <form action="login.php" method="post">
     <?php echo csrf_token_tag(); ?>
@@ -69,6 +87,7 @@ if(is_post_request() && request_is_same_domain()) {
     <input type="text" name="username" value="<?php echo h($username); ?>" /><br />
     Password:<br />
     <input type="password" name="password" value="" /><br />
+    <br />
     <input type="submit" name="submit" value="Submit"  />
   </form>
 
